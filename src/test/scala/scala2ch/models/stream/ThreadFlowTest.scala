@@ -26,9 +26,17 @@ with WordSpecLike with MustMatchers with AutoRollback with TestConnectionPool {
     "create thread" in { implicit session =>
       val stream = ThreadStream.createWithTag(ThreadFlow.Create(1, "title", now), List("tag1", "tag2", "tag3").map(TagFlow.Create(_, now)))
       val result = Await.result(stream, 5 seconds)
-      result.thread must be(Thread(1, 1, "title", now))
+      result.thread must be(Thread(result.thread.id, 1, "title", now))
       result.tags.map(_.name) must be(Seq("tag1", "tag2", "tag3"))
-      result.threadTags must be(Seq(ThreadTag(1,1,now), ThreadTag(1,2,now), ThreadTag(1,3,now)))
+      //result.threadTags must be(Seq(ThreadTag(1,1,now), ThreadTag(1,2,now), ThreadTag(1,3,now)))
+    }
+
+    "select thread with tag" in { implicit session =>
+      val thread = ThreadStream.createWithTag(ThreadFlow.Create(1, "title", now), List("tag1", "tag2", "tag3").map(TagFlow.Create(_, now)))
+      val threadResult = Await.result(thread, 5 seconds)
+      val result = Await.result(ThreadStream.select(threadResult.thread.id), 5 seconds)
+      result.get.thread must be(Thread(threadResult.thread.id, 1, "title", now))
+      result.get.tags.map(_.name) must be(Seq("tag1", "tag2", "tag3"))
     }
   }
 }
