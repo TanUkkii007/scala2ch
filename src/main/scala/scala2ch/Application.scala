@@ -3,7 +3,7 @@ package scala2ch
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import akka.http.scaladsl.Http
-import scalikejdbc.ConnectionPool
+import scalikejdbc.{ConnectionPool, ConnectionPoolSettings}
 import scala2ch.routing._
 
 object Application extends App with RouteDefinitions {
@@ -13,7 +13,7 @@ object Application extends App with RouteDefinitions {
   import system.dispatcher
 
   Class.forName("org.h2.Driver")
-  ConnectionPool.singleton("jdbc:h2:file:./target/h2db;MODE=MySQL", "root", "passwd")
+  ConnectionPool.singleton("jdbc:h2:file:./target/h2db;MODE=MySQL", "root", "passwd", ConnectionPoolSettings(5, 10, 1000, "select 1 as one"))
 
   implicit object SessionDirective extends SessionDirective
 
