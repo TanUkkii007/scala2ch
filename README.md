@@ -57,3 +57,8 @@ curl -X DELETE \
 --header "X-AUTH-TOKEN: ACCESS_TOKEN" \
 http://localhost:8080/v1/thread/1
 ```
+
+## Known issues
++ it:test command does not invoke test after migration
++ AutoRollback is not working
++ selectFlow does not select expected tags
